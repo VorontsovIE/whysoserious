@@ -3,19 +3,18 @@ import pandas as pd
 from catboost import CatBoostRegressor
 
 
-# train_data = numpy.genfromtxt('train.csv', delimiter=',')
-train_data = pd.read_csv('/home/ilya/programming/whysoserioushack/train.csv', sep=',')
+train_data = pd.read_csv('/home/ilya/programming/whysoserioushack/train_modif.csv', sep='\t', dtype=str)
 train_labels = pd.to_numeric(train_data['risk_category'], downcast='float')
 del train_data['risk_category']
 
 model = CatBoostRegressor(learning_rate=1, depth=6, loss_function='RMSE')
-fit_model = model.fit(train_data.astype(str), train_labels, cat_features=[i for i in range(32)])
+fit_model = model.fit(train_data.astype(str), train_labels, cat_features=[i for i in range(len(train_data.keys()))])
 
 print(fit_model.get_params())
-fit_model.save_model('catboost_1.cbm')
+fit_model.save_model('catboost_2.cbm')
 
-test_data = pd.read_csv('/home/ilya/programming/whysoserioushack/test.csv', sep=',')
-with open('label_predictions_1.txt', 'w') as f:
+test_data = pd.read_csv('/home/ilya/programming/whysoserioushack/test_modif.csv', sep='\t')
+with open('label_predictions_2.txt', 'w') as f:
     for x in fit_model.predict(test_data.astype(str)).astype(int):
         if x < 1: 
             print(1, file=f)
